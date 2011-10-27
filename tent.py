@@ -4,54 +4,30 @@ OCCI tent command line interface module.
 '''
 
 from inc.tent import Tent
-import getopt, sys
+import argparse, sys
 
-configurationFile = 'config.yaml'
+parser = argparse.ArgumentParser( description='OCCI tent command line interface', epilog=None )
+parser.add_argument( '--version', action='version', version='OCCI tent v1.0' )
+parser.add_argument( '--config', default='config.yaml', type=open, help='configuration file (default: %(default)s)', metavar='FILE' )
+parser.add_argument( '--modules', action='store_true', help='list all available test modules' )
+parser.add_argument( '-l', '--list', action='store_true', help='list all available tests' )
+parser.add_argument( '--show', help='show test or test module information', metavar='TEST' )
+parser.add_argument( 'tests', nargs='*', help='tests or test suites to run' )
 
-def main ( argv ):
-	print( 'OCCI tent command line interface' )
+def main ():
+	args = parser.parse_args()
+	tent = Tent( args.config )
 
-	try:
-		opts, args = getopt.getopt( argv, 'hl', ( 'help', 'list', 'modules', 'show' ) )
-	except getopt.GetoptError as e:
-		print( e )
-		printUsage()
-		sys.exit( 2 )
+	if args.modules:
+		printModuleList( tent )
+		parser.exit()
 	
-	tent = Tent( configurationFile )
-
-	for o, a in opts:
-		if o in ( '-h', '--help' ):
-			printHelp()
-			sys.exit()
-		elif o in ( '-l, --list' ):
-			pass
-		elif o == '--modules':
-			printModuleList( tent )
-			sys.exit()
-		elif o == '--show':
-			pass
-		else:
-			assert False, 'unhandled command argument'
-	
-	# run tests
-	if len( args ) != 0:
-		print( 'Running tests', ';'.join(args) )
-		raise NotImplemented()
+	if len( args.tests ) > 0:
+		raise NotImplementedError( 'Not yet available. Call without arguments.' )
 	else:
 		print( 'Running tests from `tests.yaml` file' )
 		tent.runTestsFromFile( 'tests.yaml' )
 
-def printHelp ():
-	print( 'tent [<options>] <tests>')
-	print()
-	print( 'Options and command line arguments:' )
-	print( ' -h, --help       Show this help' )
-	print( ' -l, --list       List all available tests' )
-	print( ' --modules        List all available test modules' )
-	print( ' --show <test>    Show test information' )
-	print( ' --show <module>  Show test module information')
-	print( ' tests            Tests or test suites to run')
 
 def printModuleList ( tent ):
 	for module in tent.modules:
@@ -72,4 +48,4 @@ def printModuleList ( tent ):
 					print( '    default value: ' + repr( param['default'] ) )
 
 if __name__ == '__main__':
-	main( sys.argv[1:] )
+	main()
