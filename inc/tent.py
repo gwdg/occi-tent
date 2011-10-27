@@ -13,8 +13,11 @@ class Tent:
 	_modules = None
 
 	def __init__ ( self, configurationFile ):
-		with open( configurationFile ) as f:
-			self.rawConfig = yamlLoad( f, first=True )
+		if isinstance( configurationFile, str ):
+			configurationFile = open( configurationFile )
+		self.rawConfig = yamlLoad( configurationFile, first=True )
+		configurationFile.close()
+		
 		self.serverHost = self.rawConfig['host']
 		self.serverPort = self.rawConfig['port']
 
