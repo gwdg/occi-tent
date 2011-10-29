@@ -3,6 +3,7 @@
 OCCI tent utilties.
 '''
 
+import time
 import urllib.parse, urllib.request
 
 class Request ( urllib.request.Request ):
@@ -40,3 +41,8 @@ def safeRepr ( obj ):
 		return repr( obj )
 	except Exception:
 		return object.__repr__( obj )
+
+def timestamp ():
+	'''Generate a timestamp string of the current time.'''
+	t = time.time()
+	return '{:02g}:{:02g}:{:07.4f}: '.format( t // 3600 % 24, t // 60 % 60, t % 60 )

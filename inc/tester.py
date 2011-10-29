@@ -5,7 +5,7 @@ OCCI tent tester.
 
 from .occi import *
 from .client import *
-from .util import safeRepr
+from .util import safeRepr, timestamp
 
 class SkipTestError ( Exception ):
 	pass
@@ -17,12 +17,13 @@ class Tester:
 		self.client = client
 		self.tests = []
 		self.current = None
-
+	
 	def request ( self, *args, **kwargs ):
 		return self.client( *args, **kwargs )
 	
 	def log ( self, *args ):
-		'\t'.join( args )
+		if self.current is not None:
+			self.current['log'].append( timestamp() + '\t'.join( map( str, args ) ) )
 	
 	def run ( self, test, args = None, setUp = None, tearDown = None ):
 		'''
@@ -35,7 +36,8 @@ class Tester:
 			'setUp' : setUp,
 			'tearDown' : tearDown,
 			'skipped' : False,
-			'failed' : False }
+			'failed' : False,
+			'log' : [] }
 
 		if not isinstance( args, dict ):
 			args = {}
@@ -47,13 +49,18 @@ class Tester:
 			test( self, **args )
 		except SkipTestError as e:
 			self.current['skipped'] = True
+			self.log( '[SKIP] ' + e.args[0] )
 		except self.failureException as e:
 			self.current['failed'] = True
+			self.log( '[FAIL] ' + e.args[0] )
 		except Exception as e:
 			self.current['failed'] = True
+			self.log( '[ERROR] Unhandled exception {0}: {1}'.format( type( e ).__name__, ', '.join( e.args ) ) )
 		
 		if tearDown:
 			tearDown( self )
+		
+		self.tests.append( self.current )
 	
 	def _failException ( self, message, defaultMessage = '', *args ):
 		'''

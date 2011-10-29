@@ -36,6 +36,11 @@ class Tent:
 				print( 'Executing test: ' + test.name )
 				for module in test.modules:
 					tester.run( tests.modules[module['module']], args=module['parameters'] )
+		
+		for t in tester.tests:
+			print( 'Test: ' + t['test'].__name__ )
+			print( '\n'.join( t['log'] ) )
+			print()
 	
 	@property
 	def modules ( self ):
