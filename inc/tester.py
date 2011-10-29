@@ -19,7 +19,7 @@ class Tester:
 		self.current = None
 	
 	def request ( self, *args, **kwargs ):
-		return self.client( *args, **kwargs )
+		return self.client.request( *args, **kwargs )
 	
 	def log ( self, *args ):
 		if self.current is not None:
