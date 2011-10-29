@@ -35,6 +35,7 @@ def urlencodeData ( data = None ):
 		return data
 
 def safeRepr ( obj ):
+	'''Generate a safe string representation of the given object.'''
 	try:
 		return repr( obj )
 	except Exception:
