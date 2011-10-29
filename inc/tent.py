@@ -25,7 +25,8 @@ class Tent:
 	
 	def runTestsFromFile ( self, fileName ):
 		tester = Tester( self.client )
-
+		failed, skipped = 0, 0
+		
 		with open( fileName ) as f:
 			for test in yamlLoad( f ):
 				if not isinstance( test, YamlTest ):
@@ -33,14 +34,20 @@ class Tent:
 					t.__setstate__( test )
 					test = t
 				
-				print( 'Executing test: ' + test.name )
 				for module in test.modules:
 					tester.run( tests.modules[module['module']], args=module['parameters'] )
+					
+					t = tester.current
+					print( 'Test: ' + t['test'].__name__ )
+					print( '\n'.join( t['log'] ) )
+					print( '---' )
+					
+					if t['skipped']:
+						skipped += 1
+					if t['failed']:
+						failed += 1
 		
-		for t in tester.tests:
-			print( 'Test: ' + t['test'].__name__ )
-			print( '\n'.join( t['log'] ) )
-			print()
+		print( 'Ran {0} tests: {1} successful, {2} failed, {3} skipped.'.format( len( tester.tests ), len( tester.tests ) - failed - skipped, failed, skipped ) )
 	
 	@property
 	def modules ( self ):
