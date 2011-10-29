@@ -11,7 +11,7 @@ import tests
 
 class Tent:
 	_modules = None
-
+	
 	def __init__ ( self, configurationFile ):
 		if isinstance( configurationFile, str ):
 			configurationFile = open( configurationFile )
@@ -20,9 +20,27 @@ class Tent:
 		
 		self.serverHost = self.rawConfig['host']
 		self.serverPort = self.rawConfig['port']
-
+		
 		self.client = OCCIClient( self.serverHost, self.serverPort )
 	
+	def runTest ( self, module, args ):
+		if module not in tests.modules:
+			raise ValueError( 'Unknown test method' )
+		
+		tester = Tester( self.client )
+		tester.run( tests.modules[module], args=args )
+		t = tester.current
+		
+		print( 'Test: ' + t['test'].__name__ )
+		print( '\n'.join( t['log'] ) )
+		
+		if t['skipped']:
+			print( 'Test skipped.' )
+		if t['failed']:
+			print( 'Test failed.' )
+		else:
+			print( 'Test successful.' )
+		
 	def runTestsFromFile ( self, fileName ):
 		tester = Tester( self.client )
 		failed, skipped = 0, 0
@@ -101,7 +119,7 @@ class Tent:
 				} )
 		
 		return self._modules
-
+		
 		@modules.deleter
 		def modules ( self ):
 			self._modules = None

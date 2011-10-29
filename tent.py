@@ -23,7 +23,11 @@ def main ():
 		parser.exit()
 	
 	if len( args.tests ) > 0:
-		raise NotImplementedError( 'Not yet available. Call without arguments.' )
+		for test in args.tests:
+			try:
+				tent.runTest( test, None )
+			except ValueError:
+				print( 'Test not found: ' + test )
 	else:
 		print( 'Running tests from `tests.yaml` file' )
 		tent.runTestsFromFile( 'tests.yaml' )
