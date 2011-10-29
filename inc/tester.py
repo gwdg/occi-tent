@@ -21,9 +21,9 @@ class Tester:
 	def request ( self, *args, **kwargs ):
 		return self.client.request( *args, **kwargs )
 	
-	def log ( self, *args ):
+	def log ( self, *args, seperator=' ' ):
 		if self.current is not None:
-			self.current['log'].append( timestamp() + '\t'.join( map( str, args ) ) )
+			self.current['log'].append( timestamp() + seperator.join( map( str, args ) ) )
 	
 	def run ( self, test, args = None, setUp = None, tearDown = None ):
 		'''
