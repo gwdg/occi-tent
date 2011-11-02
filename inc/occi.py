@@ -32,6 +32,9 @@ class OCCIStructure:
 	@classmethod
 	def parse ( cls, line, strict = False ):
 		raise NotImplemented()
+	
+	def __ne__ ( self, other ):
+		return not self.__eq__( other )
 
 
 class AttributeStructure ( OCCIStructure, dict ):
@@ -39,7 +42,7 @@ class AttributeStructure ( OCCIStructure, dict ):
 
 	def __repr__ ( self ):
 		return ', '.join( key + '=' + value for key, value in self.items() )
-	
+
 	@classmethod
 	def parse ( cls, line, strict = False ):
 		if line.startswith( cls.headerName ):
@@ -121,6 +124,12 @@ class CategoryStructure ( OCCIStructure ):
 			l.append( 'actions="' + ' '.join( self.actions ) + '"' )
 		
 		return '; '.join( l );
+	
+	def __eq__ ( self, other ):
+		return other and self.categoryClass == other.categoryClass and self.term == other.term and self.scheme == self.scheme
+	
+	def __hash__ ( self ):
+		return hash( ( self.categoryClass, self.term, self.scheme ) )
 	
 	@classmethod
 	def parse ( cls, line, strict = False ):
@@ -229,6 +238,12 @@ class LinkStructure ( OCCIStructure ):
 			l.append( name + '="' + value + '"' )
 		
 		return '; '.join( l );
+	
+	def __eq__ ( self, other ):
+		return other and self.link == other.link and self.rel == other.rel
+	
+	def __hash__ ( self ):
+		return hash( ( self.link, self.rel ) )
 
 	@classmethod
 	def parse ( cls, line, strict = False ):
