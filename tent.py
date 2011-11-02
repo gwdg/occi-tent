@@ -12,6 +12,7 @@ parser.add_argument( '--config', default='config.yaml', type=open, help='configu
 parser.add_argument( '--modules', action='store_true', help='list all available test modules' )
 parser.add_argument( '-l', '--list', action='store_true', help='list all available tests' )
 parser.add_argument( '--show', help='show test or test module information', metavar='TEST' )
+parser.add_argument( '--file', '-f', default='tests.yaml', help='run tests from test file' )
 parser.add_argument( 'tests', nargs='*', help='tests or test suites to run' )
 
 def main ():
@@ -29,8 +30,8 @@ def main ():
 			except ValueError:
 				print( 'Test not found: ' + test )
 	else:
-		print( 'Running tests from `tests.yaml` file' )
-		tent.runTestsFromFile( 'tests.yaml' )
+		print( 'Running tests from `{0}` file'.format( args.file ) )
+		tent.runTestsFromFile( args.file )
 
 
 def printModuleList ( tent ):
