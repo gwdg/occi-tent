@@ -84,7 +84,7 @@ class OCCIClient:
 		
 		if headerData:
 			if isinstance( headerData, dict ):
-				for key, value in headerData.values():
+				for key, value in headerData.items():
 					req.add_header( key, value )
 			else:
 				for value in headerData:
@@ -93,7 +93,7 @@ class OCCIClient:
 						#       set, as urllib does not (yet) support duplicated header fields.
 						req.headers[value.headerName] = repr( value )
 					elif isinstance( value, dict ):
-						for key, value in value.values():
+						for key, value in value.items():
 							req.add_header( key, value )
 					else:
 						raise TypeError( 'Invalid header data.' )
