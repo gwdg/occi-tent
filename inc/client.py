@@ -54,6 +54,7 @@ class OCCIError ( Exception ):
 		self.info = response.info()
 		self.body = response.read().decode()
 		self.status = response.code
+		super().__init__( self, response )
 
 
 class OCCIClient:

@@ -3,6 +3,8 @@
 OCCI tent test modules.
 '''
 
+from inc.client import OCCIError
+
 modules = {}
 __all__ = []
 

@@ -55,7 +55,7 @@ class Tester:
 			self.log( '[FAIL] ' + e.args[0] )
 		except Exception as e:
 			self.current['failed'] = True
-			self.log( '[ERROR] Unhandled exception {0}: {1}'.format( type( e ).__name__, ', '.join( e.args ) ) )
+			self.log( '[ERROR] Unhandled exception {0}: {1}'.format( type( e ).__name__, ', '.join( map( str, e.args ) ) ) )
 		
 		if tearDown:
 			tearDown( self )
