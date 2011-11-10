@@ -87,16 +87,23 @@ class OCCIClient:
 				for key, value in headerData.items():
 					req.add_header( key, value )
 			else:
+				hasStructures = False
 				for value in headerData:
 					if isinstance( value, OCCIStructure ):
-						# TODO: Create composite header field, if req.headers[value.headerName] already
-						#       set, as urllib does not (yet) support duplicated header fields.
-						req.headers[value.headerName] = repr( value )
+						# TODO: Revise composite header fields.
+						if value.headerName in req.headers:
+							req.headers[value.headerName] += ', ' + repr( value )
+						else:
+							req.headers[value.headerName] = repr( value )
+						hasStructures = True
 					elif isinstance( value, dict ):
 						for key, value in value.items():
 							req.add_header( key, value )
 					else:
 						raise TypeError( 'Invalid header data.' )
+				
+				if hasStructures and not req.has_header( 'Content-type' ):
+					req.add_unredirected_header( 'Content-type', 'text/occi' )
 		
 		if data:
 			if isinstance( data, bytes ):
