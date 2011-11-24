@@ -79,14 +79,14 @@ class Tent:
 				for funcName in module.__all__:
 					func = getattr( module, funcName )
 					spec = inspect.getfullargspec( func )
-					args = zip( spec.args, ( len( spec.args ) - len( spec.defaults or () ) ) * ( None, ) + ( spec.defaults or () ) )
+					args = zip( spec.args, ( len( spec.args ) - len( spec.defaults or () ) ) * ( NotImplemented, ) + ( spec.defaults or () ) )
 					next( args )
 					
 					params = []
 					for ( arg, default ) in args:
 						params.append( {
 							'name' : arg,
-							'default' : default,
+							'default' : None if default is NotImplemented else 'None' if default is None else default,
 							'annotation' : spec.annotations.get( arg )
 							} )
 					
@@ -107,14 +107,14 @@ class Tent:
 					functions.append( {
 						'name' : funcName,
 						'function' : func,
-						'doc' : func.__doc__,
+						'doc' : inspect.getdoc( func ),
 						'params' : params
 					} )
 				
 				self._modules.append( {
 					'name' : moduleName,
 					'module' : module,
-					'doc' : module.__doc__,
+					'doc' : inspect.getdoc( module ),
 					'functions' : functions
 				} )
 		
