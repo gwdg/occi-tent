@@ -45,7 +45,10 @@ class Tent:
 		tester = Tester( self.client )
 		failed, skipped = 0, 0
 		
-		with open( fileName ) as f:
+		if not hasattr( fileName, 'read' ):
+			fileName = open( fileName )
+		
+		with fileName as f:
 			for test in yamlLoad( f ):
 				if not isinstance( test, YamlTest ):
 					t = YamlTest()
