@@ -18,10 +18,10 @@ class OCCIResponse:
 		self.body = response.read().decode()
 		self.status = response.code
 
-		contentType = self.rsp.getheader( 'Content-Type' )
-		if contentType == 'text/uri-list':
+		self.contentType = self.rsp.getheader( 'Content-Type' )
+		if self.contentType == 'text/uri-list':
 			self.uris = self.body.split( '\n\r' )
-		elif contentType == 'text/occi':
+		elif self.contentType == 'text/occi':
 			pass
 		else: # contentType == 'text/plain':
 			self.structures = [ self.parseStructure( line.strip() ) for line in self.body.strip().split( '\n' ) ]
