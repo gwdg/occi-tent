@@ -193,6 +193,13 @@ class CategoryStructure ( OCCIStructure ):
 		else:
 			return self
 	
+	def identity ( self ):
+		'''Clone the object, and remove all properties not relevant for the identity.'''
+		clone = CategoryStructure.__new__( type( self ) )
+		clone.term = self.term
+		clone.scheme = self.scheme
+		return clone
+	
 	def isMixin ( self ):
 		return self.categoryClass == MixinStructure.categoryClass
 	
