@@ -1,5 +1,5 @@
 --- !Test
-name: Test title
+title: Test title
 modules:
 - module: moduleA.example
   parameters:
@@ -10,7 +10,7 @@ modules:
     param1: 253235
 ...
 --- !Test
-name: Another, shorter test
+title: Another, shorter test
 modules:
 - module: moduleA.example
   parameters:
