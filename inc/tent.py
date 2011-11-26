@@ -9,6 +9,16 @@ from .client import OCCIClient
 from .yaml import *
 import tests
 
+def clonedPrinter ( secondChannel ):
+	'''Clone the printer to a second channel if it exists.'''
+	if not secondChannel:
+		return print
+	
+	def prnt ( *args, **kwargs ):
+		print( *args, **kwargs )
+		print( *args, file=secondChannel, **kwargs )
+	return prnt
+
 class Tent:
 	_modules = None
 	
@@ -40,35 +50,64 @@ class Tent:
 			print( 'Test failed.' )
 		else:
 			print( 'Test successful.' )
-		
-	def runTestsFromFile ( self, fileName ):
+	
+	def runSuite ( self, suiteFile, logFile = None ):
+		'''Run test suite.'''
+		testCases = self.loadTestCases( suiteFile )
+		return self.runTests( testCases, logFile )
+	
+	def runTests ( self, testCases, logFile = None ):
+		'''Run test cases.'''
 		tester = Tester( self.client )
-		failed, skipped = 0, 0
+		total, failed, skipped = 0, 0, 0
+		print = clonedPrinter( logFile )
 		
-		if not hasattr( fileName, 'read' ):
-			fileName = open( fileName )
-		
-		with fileName as f:
-			for test in yamlLoad( f ):
-				if not isinstance( test, YamlTest ):
-					t = YamlTest()
-					t.__setstate__( test )
-					test = t
+		for case in testCases:
+			print( 'Test: ' + case.title )
+			tester.start( case.title )
+			
+			for module in case.modules:
+				parameters = module['parameters']
+				if module['chain'] and module['chain'] not in parameters:
+					parameters[module['chain']] = tester.current['result']
 				
-				for module in test.modules:
-					tester.run( tests.modules[module['module']], args=module['parameters'] )
-					
-					t = tester.current
-					print( 'Test: ' + t['test'].__name__ )
-					print( '\n'.join( t['log'] ) )
-					print( '---' )
-					
-					if t['skipped']:
-						skipped += 1
-					if t['failed']:
-						failed += 1
+				tester.run( tests.modules[module['module']], args=parameters )
+				
+				if tester.current['skipped'] or tester.current['failed']:
+					break
+			
+			t = tester.current
+			if t['log']:
+				print( '    ' + '\n    '.join( t['log'] ) )
+			
+			total += 1
+			if t['skipped']:
+				skipped += 1
+			if t['failed']:
+				failed += 1
 		
-		print( 'Ran {0} tests: {1} successful, {2} failed, {3} skipped.'.format( len( tester.tests ), len( tester.tests ) - failed - skipped, failed, skipped ) )
+		print()
+		print( 'Ran {0} tests: {1} successful, {2} failed, {3} skipped.'.format( total, total - failed - skipped, failed, skipped ) )
+	
+	def loadTestCases ( self, suiteFile ):
+		'''Load test cases from suite file.'''
+		if isinstance( suiteFile, str ):
+			suiteFile = open( suiteFile )
+		
+		for testCase in yamlLoad( suiteFile ):
+			if not isinstance( testCase, YamlTest ):
+				t = YamlTest()
+				t.__setstate__( testCase )
+				testCase = t
+			
+			for module in testCase.modules:
+				module.setdefault( 'module' )
+				module.setdefault( 'chain' )
+				module.setdefault( 'parameters', {} )
+			
+			yield testCase
+		
+		suiteFile.close()
 	
 	@property
 	def modules ( self ):

@@ -25,20 +25,24 @@ class Tester:
 		if self.current is not None:
 			self.current['log'].append( timestamp() + seperator.join( map( str, args ) ) )
 	
-	def run ( self, test, args = None, setUp = None, tearDown = None ):
-		'''
-		Run the given test. Optionally set up the text fixture before testing,
-		and deconstruct it after testing if appropriate setUp and tearDown
-		callables are specified.
-		'''
+	def start ( self, title='' ):
+		'''Start a new test case execution.'''
+		self.previous = self.current
 		self.current = {
-			'test' : test,
-			'setUp' : setUp,
-			'tearDown' : tearDown,
+			'title' : title,
+			'modules' : [],
+			'result' : None,
 			'skipped' : False,
 			'failed' : False,
 			'log' : [] }
-
+		self.tests.append( self.current )
+	
+	def run ( self, module, args = None, setUp = None, tearDown = None ):
+		'''
+		Run the given test module. Optionally set up the text fixture before
+		testing, and deconstruct it after testing if appropriate setUp and
+		tearDown callables are specified.
+		'''
 		if not isinstance( args, dict ):
 			args = {}
 		
@@ -46,7 +50,8 @@ class Tester:
 			setUp( self )
 		
 		try:
-			test( self, **args )
+			self.current['modules'].append( module )
+			self.current['result'] = module( self, **args )
 		except SkipTestError as e:
 			self.current['skipped'] = True
 			self.log( '[SKIP] ' + e.args[0] )
@@ -59,8 +64,6 @@ class Tester:
 		
 		if tearDown:
 			tearDown( self )
-		
-		self.tests.append( self.current )
 	
 	def _failException ( self, message, defaultMessage = '', *args ):
 		'''

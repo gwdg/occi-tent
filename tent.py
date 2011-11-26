@@ -4,6 +4,9 @@ OCCI tent command line interface module.
 '''
 
 from inc.tent import Tent
+from inc.yaml import YamlTest
+from itertools import islice
+from datetime import datetime
 import argparse, sys
 
 parser = argparse.ArgumentParser( description='OCCI tent command line interface', epilog=None )
@@ -28,23 +31,52 @@ def main ():
 		parser.exit()
 	
 	if args.runmod:
-		try:
-			tent.runTest( args.runmod, None )
-		except ValueError:
-			parser.error( 'test module not found: ' + test )
+		t = YamlTest( '[module] ' + args.runmod )
+		t.modules.append( { 'module' : args.runmod, 'chain' : None, 'parameters' : {} } )
+		tent.runTests( ( t, ) )
 		parser.exit()
 	
 	if not args.suite:
 		parser.error( 'no test suite file given' )
 	
 	if args.list:
-		parser.error( 'Sorry, not yet implemeted.' )
+		printTestCases( args.suite.name, tent.loadTestCases( args.suite ) )
+		parser.exit()
 	
 	if args.run:
-		parser.error( 'Sorry, not yet implemeted.' )
+		if args.run < 0:
+			testCases = list( tent.loadTestCases( args.suite ) )
+			printTestCases( args.suite.name, testCases )
+			
+			try:
+				testNum = int( input( 'Execute which test? ' ) )
+			except ValueError:
+				testCase = None
+			
+			if testNum < 0 or testNum > len( testCases ):
+				testCase = None
+			else:
+				testCase = testCases[testNum]
+		else:
+			testCase = next( islice( tent.loadTestCases( args.suite ), args.run, args.run + 1 ), None )
+		
+		if not testCase:
+			parser.error( 'Invalid test case specification.' )
+		
+		print( 'Running single test.' )
+		tent.runTests( ( testCase, ) )
+		parser.exit()
+	
+	with open( '{}.log'.format( args.suite.name ), 'a+' ) as logFile:
+		print( '=' * 50 + ' {0} =='.format( datetime.utcnow().isoformat( ' ' ) ), file=logFile )
+		print( 'Running tests from `{0}`'.format( args.suite.name ) )
+		tent.runSuite( args.suite, logFile )
+		print( file=logFile )
 
-	print( 'Running tests from `{0}`'.format( args.suite.name ) )
-	tent.runTestsFromFile( args.suite )
+def printTestCases ( suiteName, testCases ):
+	print( 'Available test cases in `{0}`'.format( suiteName ) )
+	for i, testCase in enumerate( testCases ):
+		print( '[{: >2}] {}'.format( i, testCase.title ) )
 
 def printModuleList ( tent ):
 	for module in tent.modules:

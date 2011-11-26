@@ -43,21 +43,9 @@ class YamlTest ( YAMLObject ):
 	yaml_loader = YAMLLoader
 	yaml_dumper = YAMLDumper
 
-	def __init__ ( self ):
-		self.name = ''
-		self.type = ''
+	def __init__ ( self, title = '' ):
+		self.title = title
 		self.modules = []
 	
-	#def __setstate__ ( self, state ):
-	#	self.__dict__.update( state )
-
-class YamlSuite ( YAMLObject ):
-	'''YAML object representation for a defined test suite.'''
-	yaml_tag = '!Suite'
-	yaml_loader = YAMLLoader
-	yaml_dumper = YAMLDumper
-
-	def __init__ ( self ):
-		self.name = ''
-		self.type = ''
-		self.childs = []
+	def __setstate__ ( self, state ):
+		self.__dict__.update( state )
