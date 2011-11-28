@@ -37,7 +37,7 @@ class OCCIResponse:
 			return CategoryStructure.parse( line, strict=strict )
 		elif line.startswith( 'Link:' ):
 			return LinkStructure.parse( line, strict=strict )
-		elif line.startswith( 'X-OCCI-Location' ):
+		elif line.startswith( 'X-OCCI-Location:' ) or line.startswith( 'Location:' ):
 			return LocationStructure.parse( line, strict=strict )
 		elif line.startswith( 'X-OCCI-Attribute:' ):
 			return AttributeStructure.parse( line, strict=strict )

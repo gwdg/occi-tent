@@ -69,6 +69,8 @@ class LocationStructure ( OCCIStructure, list ):
 	def parse ( cls, line, strict = False ):
 		if line.startswith( cls.headerName ):
 			line = line[len( cls.headerName ) + 1:]
+		elif line.startswith( 'Location:' ):
+			line = line[9:]
 		
 		self = cls.__new__ ( cls )
 		for location in line.split( ',' ):
