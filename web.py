@@ -3,16 +3,16 @@
 OCCI tent web interface server.
 '''
 
-from inc.tent import Tent
 from http.server import HTTPServer, BaseHTTPRequestHandler
-import glob, sys, threading, webbrowser
+import argparse, glob
+import threading, sys
+import webbrowser
+
+from inc.tent import Tent
 
 class TentRequestHandler ( BaseHTTPRequestHandler ):
 	server_version = 'TentWeb/1.0'
-	configFile = 'config.yaml'
-	
-	def initTent ( self ):
-		return Tent( self.configFile )
+	tent = None
 	
 	def GET_main ( self, path ):
 		body = []
@@ -43,7 +43,6 @@ class TentRequestHandler ( BaseHTTPRequestHandler ):
 		self.sendHtmlResponse( body )
 	
 	def GET_cases ( self, path ):
-		tent = self.initTent()
 		body = [ '<h1>Test cases of suite: ' + path[0] + '</h1>' ]
 		suite = path[0] + '.yaml'
 		
@@ -53,7 +52,7 @@ class TentRequestHandler ( BaseHTTPRequestHandler ):
 			body.append( '<p>Invalid suite name.</p>' )
 		else:
 			body.append( '<ol>' )
-			for testCase in tent.loadTestCases( f ):
+			for testCase in self.tent.loadTestCases( f ):
 				body.append( '  <li>' + testCase.title + '</li>' )
 			body.append( '</ol>' )
 		self.sendHtmlResponse( body )
@@ -82,10 +81,9 @@ class TentRequestHandler ( BaseHTTPRequestHandler ):
 		self.sendHtmlResponse( body )
 	
 	def GET_modules ( self, path ):
-		tent = self.initTent()
 		body = [ '<h1>Test module index</h1>' ]
 		
-		for module in tent.modules:
+		for module in self.tent.modules:
 			body.append( '<h2>' + module['name'] + '</h2>' )
 			
 			if module['doc']:
@@ -173,12 +171,22 @@ pre { white-space: pre-wrap; font-size: 0.9em; }'''
 		self.end_headers()
 		self.wfile.write( body )
 
+
 if __name__ == '__main__':
-	port = int( sys.argv[1] ) if sys.argv[1:] else 8080
-	httpd = HTTPServer( ( '', port ), TentRequestHandler )
+	parser = argparse.ArgumentParser( description='OCCI tent web interface', epilog=None )
+	parser.add_argument( '--config', '-c', default='config.yaml', type=open, help='configuration file (default: %(default)s)', metavar='FILE' )
+	parser.add_argument( '--port', '-p', default=8080, type=int, help='port on which the webserver should listen (default: %(default)s)' )
+	
+	try:
+		args = parser.parse_args()
+	except IOError as e:
+		parser.error( str( e ) )
+	
+	TentRequestHandler.tent = Tent( args.config )
+	httpd = HTTPServer( ( '', args.port ), TentRequestHandler )
 	try:
 		print( 'Serving on {0}:{1}...'.format( *httpd.socket.getsockname() ) )
-		webbrowser.open( 'http://localhost:{0}'.format( port ) )
+		webbrowser.open( 'http://localhost:{0}'.format( args.port ) )
 		httpd.serve_forever()
 	except KeyboardInterrupt:
 		print( '\nKeyboard interrupt received, shutting down.' )
