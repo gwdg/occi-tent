@@ -1,0 +1,45 @@
+title: Query - Availability
+modules:
+- module: core_query.availability
+  parameters:
+---
+title: Query - Built-in structures
+modules:
+- module: core_query.builtinStructures
+  parameters:
+    testInfrastructureTypes: true
+---
+title: Query - Fixed filter
+modules:
+- module: core_query.fixedFilter
+  parameters:
+---
+title: Query - Random filter
+modules:
+- module: core_query.randomFilter
+  parameters:
+---
+title: Mixin - Add mixin
+modules:
+- module: core_mixin.addMixin
+  parameters:
+---
+title: Mixin - Add provider mixin
+modules:
+- module: core_mixin.addProviderMixin
+  parameters:
+---
+title: Mixin - Add colliding mixin
+modules:
+- module: core_mixin.addCollidingMixin
+  parameters:
+---
+title: Mixin - Remove provider mixin
+modules:
+- module: core_mixin.removeProviderMixing
+  parameters:
+---
+title: Mixin - Remove non-existant mixin
+modules:
+- module: core_mixin.removeNonExistantMixin
+  parameters:
