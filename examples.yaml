@@ -1,0 +1,58 @@
+title: Single module, simple
+modules:
+- module: exampleModules.simple
+---
+title: Single module, parameterized
+modules:
+- module: exampleModules.parameterized
+  parameters:
+    param1: First parameter
+    param2: Second parameter
+---
+title: Single module, returningTest
+modules:
+- module: exampleModules.returningTest
+---
+title: Single module, failingTest
+modules:
+- module: exampleModules.failingTest
+---
+title: Single module, skippingTest
+modules:
+- module: exampleModules.skippingTest
+---
+title: Multiple modules
+modules:
+- module: exampleModules.simple
+- module: exampleModules.parameterized
+  parameters:
+    param1: First parameter
+    param2: Second parameter
+---
+title: Multiple modules, skipping first
+modules:
+- module: exampleModules.skippingTest
+- module: exampleModules.simple
+---
+title: Multiple modules, failing first
+modules:
+- module: exampleModules.failingTest
+- module: exampleModules.simple
+---
+title: Chained test execution
+modules:
+- module: exampleModules.returningTest
+- module: exampleModules.parameterized
+  chain: param1
+  parameters:
+    param2: the parameter before should have received the value of the previous test
+---
+title: Chained incrementing test
+modules:
+- module: exampleModules.incrementing
+- module: exampleModules.incrementing
+  chain: number
+- module: exampleModules.incrementing
+  chain: number
+- module: exampleModules.incrementing
+  chain: number
