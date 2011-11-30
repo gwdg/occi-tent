@@ -27,7 +27,6 @@ def quote ( text, safe = '~' ):
 		return urllib.parse.quote_from_bytes( text, safe )
 	return urllib.parse.quote( str( text ), safe )
 
-
 def urlencodeData ( data = None ):
 	'''URL encode data, matching the `application/x-www-form-urlencoded` MIME type.'''
 	try:
@@ -46,3 +45,13 @@ def timestamp ():
 	'''Generate a timestamp string of the current time.'''
 	t = time.time()
 	return '{:02g}:{:02g}:{:07.4f}: '.format( t // 3600 % 24, t // 60 % 60, t % 60 )
+
+def clonedPrinter ( secondChannel ):
+	'''Clone the printer to a second channel if it exists.'''
+	if not secondChannel:
+		return print
+	
+	def prnt ( *args, **kwargs ):
+		print( *args, **kwargs )
+		print( *args, file=secondChannel, **kwargs )
+	return prnt

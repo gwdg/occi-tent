@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 '''
-OCCI tent command line interface module.
+OCCI tent command line interface.
 '''
+
+from datetime import datetime
+from itertools import islice
+import argparse, sys
 
 from inc.tent import Tent
 from inc.yaml import YamlTest
-from itertools import islice
-from datetime import datetime
-import argparse, sys
 
 parser = argparse.ArgumentParser( description='OCCI tent command line interface', epilog=None )
 parser.add_argument( '--version', action='version', version='OCCI tent v1.0' )

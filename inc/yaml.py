@@ -3,16 +3,16 @@
 YAML utility functions and class representations.
 '''
 
-import yaml
 from yaml import YAMLError, YAMLObject
+import yaml
+
 try:
 	from yaml import CSafeLoader as YAMLLoader, CSafeDumper as YAMLDumper
 except ImportError:
 	from yaml import SafeLoader as YAMLLoader, SafeDumper as YAMLDumper
 
-#__all__ = [ 'YAMLError', 'yamlLoad', 'yamlDump', 'YamlTest', 'YamlSuite' ]
+__all__ = [ 'YAMLError', 'yamlLoad', 'yamlDump', 'YamlTest' ]
 
-# Wrapper
 def yamlLoad ( stream, first = False ):
 	'''
 	Safely parse all YAML documents in the given stream and return a generator
@@ -36,7 +36,6 @@ def yamlDump ( data, stream = None, **kwargs ):
 	
 	return yaml.dump( data, Dumper = YAMLDumper, stream = stream, **kwargs )
 
-# YAML class representations
 class YamlTest ( YAMLObject ):
 	'''YAML object representation for a defined test.'''
 	yaml_tag = '!Test'

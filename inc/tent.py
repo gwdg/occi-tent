@@ -2,22 +2,14 @@
 '''
 OCCI tent core.
 '''
+
 import inspect
 
-from .tester import Tester
 from .client import OCCIClient
+from .tester import Tester
+from .util import clonedPrinter
 from .yaml import *
 import tests
-
-def clonedPrinter ( secondChannel ):
-	'''Clone the printer to a second channel if it exists.'''
-	if not secondChannel:
-		return print
-	
-	def prnt ( *args, **kwargs ):
-		print( *args, **kwargs )
-		print( *args, file=secondChannel, **kwargs )
-	return prnt
 
 class Tent:
 	_modules = None

@@ -3,8 +3,8 @@
 OCCI tent tester.
 '''
 
-from .occi import *
 from .client import *
+from .occi import *
 from .util import safeRepr, timestamp
 
 class SkipTestError ( Exception ):
