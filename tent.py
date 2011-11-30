@@ -115,7 +115,7 @@ def printModuleList ( tent ):
 				print( '- {name}'.format( **function ) )
 			
 			for param in function['params']:
-				print( '  - {name} : {annotation}'.format( **param ) )
+				print( '  * {name} : {annotation}'.format( **param ) )
 				if param['default']:
 					print( '    default value: ' + repr( param['default'] ) )
 
