@@ -8,6 +8,7 @@ from itertools import islice
 import argparse, sys
 
 from inc.tent import Tent
+from inc.util import suiteOpener
 from inc.yaml import YamlTest
 
 parser = argparse.ArgumentParser( description='OCCI tent command line interface', epilog=None )
@@ -19,7 +20,7 @@ parser.add_argument( '--log', action='store_true', help='show log from last exec
 parser.add_argument( '--list', '-l', action='store_true', help='list available test cases from test suite' )
 parser.add_argument( '--run', '-r', nargs='?', const=-1, type=int, help='run single test case from test suite', metavar='ID' )
 parser.add_argument( '--runmod', help='run single, parameterless test module', metavar='MODULE' )
-parser.add_argument( 'suite', nargs='?', type=open, help='test suite file to use' )
+parser.add_argument( 'suite', nargs='?', type=suiteOpener, help='test suite file to use' )
 
 def main ():
 	try:

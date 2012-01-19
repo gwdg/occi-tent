@@ -55,3 +55,14 @@ def clonedPrinter ( secondChannel ):
 		print( *args, **kwargs )
 		print( *args, file=secondChannel, **kwargs )
 	return prnt
+
+def suiteOpener ( *args, **kwargs ):
+	try:
+		return open( *args, **kwargs )
+	except IOError as e:
+		if e.errno == 2:
+			path = 'suites/' + e.filename
+			if not path.endswith( '.yaml' ):
+				path += '.yaml'
+			return open( path, **kwargs )
+		raise
