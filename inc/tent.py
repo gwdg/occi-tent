@@ -44,16 +44,16 @@ class Tent:
 		else:
 			print( 'Test successful.' )
 	
-	def runSuite ( self, suiteFile, logFile = None ):
+	def runSuite ( self, suiteFile, logFile = None, suppressPrint = False ):
 		'''Run test suite.'''
 		testCases = self.loadTestCases( suiteFile )
-		return self.runTests( testCases, logFile )
+		return self.runTests( testCases, logFile, suppressPrint=suppressPrint )
 	
-	def runTests ( self, testCases, logFile = None ):
+	def runTests ( self, testCases, logFile = None, suppressPrint = False ):
 		'''Run test cases.'''
 		tester = Tester( self.client )
 		total, failed, skipped = 0, 0, 0
-		print = clonedPrinter( logFile )
+		print = clonedPrinter( logFile, suppressPrint=suppressPrint )
 		
 		for case in testCases:
 			print( 'Test: ' + case.title )

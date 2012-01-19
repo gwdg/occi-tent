@@ -46,8 +46,13 @@ def timestamp ():
 	t = time.time()
 	return '{:02g}:{:02g}:{:07.4f}: '.format( t // 3600 % 24, t // 60 % 60, t % 60 )
 
-def clonedPrinter ( secondChannel ):
+def clonedPrinter ( secondChannel, suppressPrint = False ):
 	'''Clone the printer to a second channel if it exists.'''
+	if suppressPrint:
+		def prntSecondOnly ( *args, **kwargs ):
+			print( *args, file=secondChannel, **kwargs )
+		return prntSecondOnly
+	
 	if not secondChannel:
 		return print
 	
