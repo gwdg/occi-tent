@@ -1,0 +1,26 @@
+html
+{ font: 12pt sans-serif; padding: 0; background: #EEE; }
+body
+{ background: #FFF; border: 1px solid #CCC; margin: 1em; padding: 2em; }
+
+h1
+{ background: #CCC; font-style: italic; font-weight: normal; font-weight: 2em;
+  margin: -1em; margin-bottom: 0.5em; padding: 0.1em 0.5em; }
+h2
+{ margin: 0.5em -1em 0em -1em; }
+h3
+{ margin: 1em 0 0; border-bottom: 1px solid #EEE; font-size: 1.5em; font-weight: normal; }
+h4
+{ margin: 1em 0 0;  }
+
+p, ul, dl
+{ margin: 0.2em 0em 0.8em; }
+
+ol, ul
+{ padding-left: 1em; }
+li
+{ padding-top: 0.2em; }
+a
+{ color: #666; }
+pre
+{ white-space: pre-wrap; font-size: 0.9em; }

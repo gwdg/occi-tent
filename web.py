@@ -4,7 +4,7 @@ OCCI tent web interface server.
 '''
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
-import argparse, glob
+import argparse, glob, os, shutil
 import threading, sys
 import webbrowser
 
@@ -106,24 +106,13 @@ class TentRequestHandler ( BaseHTTPRequestHandler ):
 		self.sendHtmlResponse( body )
 	
 	def sendStylesheet ( self ):
-		body  = b'''
-html { font: 12pt sans-serif; padding: 0; background: #EEE; }
-body { background: #FFF; border: 1px solid #CCC; margin: 1em; padding: 2em; }
-h1 { background: #CCC; margin: -1em; margin-bottom: 0; padding: 0.1em 0.5em; font-style: italic; font-weight: normal; font-weight: 2em; }
-h2 { margin: 0.3em -1em 0.1em -1em; }
-h3 { margin: 1em 0 0; border-bottom: 1px solid #EEE; font-size: 1.5em; font-weight: normal; }
-h4 { margin: 1em 0 0;  }
-p, ul, dl { margin: 0.5em 0em; }
-ol, ul { padding-left: 1em; }
-li { padding-top: 0.2em; }
-a { color: #666; }
-pre { white-space: pre-wrap; font-size: 0.9em; }'''	
-		
 		self.send_response( 200 )
 		self.send_header( 'Content-Type', 'text/css; charset=utf-8' )
-		self.send_header( 'Content-Length', str( len( body ) ) )
+		self.send_header( 'Content-Length', str( os.stat( 'web_styles.css' ).st_size ) )
 		self.end_headers()
-		self.wfile.write( body )
+		
+		with open( 'web_styles.css', 'br' ) as f:
+			shutil.copyfileobj( f, self.wfile )
 	
 	# internal handlers & utility functions
 	def do_GET ( self ):
