@@ -14,7 +14,7 @@ class TentRequestHandler ( BaseHTTPRequestHandler ):
 	server_version = 'TentWeb/1.0'
 	tent = None
 	
-	def GET_main ( self, path ):
+	def GET_main ( self, *path ):
 		body = []
 		body.append( '<h1>Tent web interface</h1>' )
 		body.append( '<h2>Actions</h2>' )
@@ -26,14 +26,14 @@ class TentRequestHandler ( BaseHTTPRequestHandler ):
 		body.append( '</ul>' )
 		self.sendHtmlResponse( body )
 	
-	def GET_shutdown ( self, path ):
+	def GET_shutdown ( self, *path ):
 		body = '<h1>Tent web interface</h1>\n<p>Shutting down…</p>'
 		self.sendHtmlResponse( body )
 		
 		print( 'Shutdown requested, shutting down...' )
 		threading.Thread( name='TentShutdownThread', target=self.server.shutdown ).start()
 	
-	def GET_logs ( self, path ):
+	def GET_logs ( self, *path ):
 		body = [ '<h1>Test suite logs</h1>', '<p>Choose test suite:</p>', '<ul>' ]
 		
 		for suiteName in glob.glob( '*.yaml.log' ):
@@ -42,7 +42,7 @@ class TentRequestHandler ( BaseHTTPRequestHandler ):
 		body.append( '</ul>' )
 		self.sendHtmlResponse( body )
 	
-	def GET_cases ( self, path ):
+	def GET_cases ( self, *path ):
 		body = [ '<h1>Test cases of suite: ' + path[0] + '</h1>' ]
 		suite = path[0] + '.yaml'
 		
@@ -57,7 +57,7 @@ class TentRequestHandler ( BaseHTTPRequestHandler ):
 			body.append( '</ol>' )
 		self.sendHtmlResponse( body )
 	
-	def GET_log ( self, path ):
+	def GET_log ( self, *path ):
 		body = [ '<h1>Log of suite: ' + path[0] + '</h1>' ]
 		suite = path[0] + '.yaml'
 		
@@ -80,7 +80,7 @@ class TentRequestHandler ( BaseHTTPRequestHandler ):
 			body.append( '<pre>\n' + '\n'.join( logLines ) + '</pre>' )
 		self.sendHtmlResponse( body )
 	
-	def GET_modules ( self, path ):
+	def GET_modules ( self, *path ):
 		body = [ '<h1>Test module index</h1>' ]
 		
 		for module in self.tent.modules:
@@ -147,7 +147,7 @@ pre { white-space: pre-wrap; font-size: 0.9em; }'''
 		action = 'GET_' + action.lower()
 		
 		if hasattr( self, action ):
-			getattr( self, action )( remainder )
+			getattr( self, action )( *remainder )
 		else:
 			print( 'Unknown handler:', action )
 			self.send_error( 404, 'File not found' )
