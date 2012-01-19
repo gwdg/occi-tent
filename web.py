@@ -52,9 +52,8 @@ class TentRequestHandler ( BaseHTTPRequestHandler ):
 		body.append( '</ul>' )
 		self.sendHtmlResponse( body )
 	
-	def GET_suite ( self, *path ):
-		body = [ '<h1>Test cases of suite: ' + path[0] + '</h1>' ]
-		suite = path[0]
+	def GET_suite ( self, suite, *path ):
+		body = [ '<h1>Test cases of suite: ' + suite + '</h1>' ]
 		
 		try:
 			f = open( 'suites/' + suite + '.yaml' )
@@ -67,11 +66,11 @@ class TentRequestHandler ( BaseHTTPRequestHandler ):
 			body.append( '</ol>' )
 		self.sendHtmlResponse( body )
 	
-	def GET_log ( self, *path ):
-		body = [ '<h1>Log of suite: ' + path[0] + '</h1>' ]
+	def GET_log ( self, suite, *path ):
+		body = [ '<h1>Log of suite: ' + suite + '</h1>' ]
 		
 		try:
-			f = open( 'suites/' + path[0] + '.yaml.log' )
+			f = open( 'suites/' + suite + '.yaml.log' )
 		except IOError:
 			body.append( '<p>No logs found or invalid suite name.</p>' )
 		else:
@@ -85,7 +84,7 @@ class TentRequestHandler ( BaseHTTPRequestHandler ):
 					logLines.append( line.strip( '\n' ) )
 			f.close()
 			
-			body.append( '<p>Last execution of suite <strong>{}</strong>: {}'.format( path[0], logTime ) + '</p>' )
+			body.append( '<p>Last execution of suite <strong>{}</strong>: {}'.format( suite, logTime ) + '</p>' )
 			body.append( '<pre>\n' + '\n'.join( logLines ) + '</pre>' )
 		self.sendHtmlResponse( body )
 	
