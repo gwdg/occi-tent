@@ -13,6 +13,7 @@ from inc.tent import Tent
 class TentRequestHandler ( BaseHTTPRequestHandler ):
 	server_version = 'TentWeb/1.0'
 	tent = None
+	homelink = '<a id="homelink" href="/">Home</a>'
 	
 	def GET_main ( self, *path ):
 		body = [ '<h1>Tent web interface</h1>' ]
@@ -40,7 +41,7 @@ class TentRequestHandler ( BaseHTTPRequestHandler ):
 		threading.Thread( name='TentShutdownThread', target=self.server.shutdown ).start()
 	
 	def GET_suite ( self, suite, *path ):
-		body = [ '<h1>Test cases of suite: ' + suite + '</h1>' ]
+		body = [ self.homelink, '<h1>Test cases of suite: ' + suite + '</h1>' ]
 		
 		try:
 			f = open( 'suites/' + suite + '.yaml' )
@@ -54,7 +55,7 @@ class TentRequestHandler ( BaseHTTPRequestHandler ):
 		self.sendHtmlResponse( body )
 	
 	def GET_log ( self, suite, *path ):
-		body = [ '<h1>Log of suite: ' + suite + '</h1>' ]
+		body = [ self.homelink, '<h1>Log of suite: ' + suite + '</h1>' ]
 		
 		try:
 			f = open( 'suites/' + suite + '.yaml.log' )
@@ -76,7 +77,7 @@ class TentRequestHandler ( BaseHTTPRequestHandler ):
 		self.sendHtmlResponse( body )
 	
 	def GET_modules ( self, *path ):
-		body = [ '<h1>Test module index</h1>' ]
+		body = [ self.homelink, '<h1>Test module index</h1>' ]
 		
 		for module in self.tent.modules:
 			body.append( '<h2>' + module['name'] + '</h2>' )
