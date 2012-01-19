@@ -20,6 +20,7 @@ class TentRequestHandler ( BaseHTTPRequestHandler ):
 		body.append( '<h2>Actions</h2>' )
 		body.append( '<ul>' )
 		body.append( '  <li><a href="/modules">Test module overview</a></li>' )
+		body.append( '  <li><a href="/suites">Test suites</a></li>' )
 		body.append( '  <li><a href="/logs">Test suite logs</a></li>' )
 		body.append( '  <li><a href="/cases/SUITENAMEHERE">Test suite, test cases</a></li>' )
 		body.append( '  <li><a href="/shutdown">Shutdown web interface</a></li>' )
@@ -33,6 +34,15 @@ class TentRequestHandler ( BaseHTTPRequestHandler ):
 		print( 'Shutdown requested, shutting down...' )
 		threading.Thread( name='TentShutdownThread', target=self.server.shutdown ).start()
 	
+	def GET_suites ( self, *path ):
+		body = [ '<h1>Test suites</h1>', '<ul>' ]
+		
+		for suite in self.tent.suites:
+			body.append( '  <li><a href="/suite/{0}">{0}</a> (<a href="/log/{0}">logs</a>)</li>'.format( suite ) )
+		
+		body.append( '</ul>' )
+		self.sendHtmlResponse( body )
+	
 	def GET_logs ( self, *path ):
 		body = [ '<h1>Test suite logs</h1>', '<p>Choose test suite:</p>', '<ul>' ]
 		
@@ -42,12 +52,12 @@ class TentRequestHandler ( BaseHTTPRequestHandler ):
 		body.append( '</ul>' )
 		self.sendHtmlResponse( body )
 	
-	def GET_cases ( self, *path ):
+	def GET_suite ( self, *path ):
 		body = [ '<h1>Test cases of suite: ' + path[0] + '</h1>' ]
-		suite = path[0] + '.yaml'
+		suite = path[0]
 		
 		try:
-			f = open( suite )
+			f = open( 'suites/' + suite + '.yaml' )
 		except IOError:
 			body.append( '<p>Invalid suite name.</p>' )
 		else:
@@ -59,10 +69,9 @@ class TentRequestHandler ( BaseHTTPRequestHandler ):
 	
 	def GET_log ( self, *path ):
 		body = [ '<h1>Log of suite: ' + path[0] + '</h1>' ]
-		suite = path[0] + '.yaml'
 		
 		try:
-			f = open( suite + '.log' )
+			f = open( 'suites/' + path[0] + '.yaml.log' )
 		except IOError:
 			body.append( '<p>No logs found or invalid suite name.</p>' )
 		else:
@@ -76,7 +85,7 @@ class TentRequestHandler ( BaseHTTPRequestHandler ):
 					logLines.append( line.strip( '\n' ) )
 			f.close()
 			
-			body.append( '<p>Last execution of <strong>{}</strong>: {}'.format( suite, logTime ) + '</p>' )
+			body.append( '<p>Last execution of suite <strong>{}</strong>: {}'.format( path[0], logTime ) + '</p>' )
 			body.append( '<pre>\n' + '\n'.join( logLines ) + '</pre>' )
 		self.sendHtmlResponse( body )
 	

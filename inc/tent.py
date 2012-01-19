@@ -3,7 +3,7 @@
 OCCI tent core.
 '''
 
-import inspect
+import os, inspect
 
 from .client import OCCIClient
 from .tester import Tester
@@ -13,6 +13,7 @@ import tests
 
 class Tent:
 	_modules = None
+	_suites = None
 	
 	def __init__ ( self, configurationFile ):
 		if isinstance( configurationFile, str ):
@@ -102,6 +103,17 @@ class Tent:
 		suiteFile.close()
 	
 	@property
+	def suites ( self ):
+		'''Test suite index.'''
+		if not self._suites:
+			self._suites = []
+			for fileName in os.listdir( 'suites/' ):
+				if fileName.endswith( '.yaml' ):
+					self._suites.append( fileName[:-5] )
+		
+		return self._suites
+	
+	@property
 	def modules ( self ):
 		'''Test module index.'''
 		if not self._modules:
@@ -153,7 +165,11 @@ class Tent:
 				} )
 		
 		return self._modules
-		
-		@modules.deleter
-		def modules ( self ):
-			self._modules = None
+	
+	@modules.deleter
+	def modules ( self ):
+		self._modules = None
+	
+	@suites.deleter
+	def suites ( self ):
+			self._suites = None
