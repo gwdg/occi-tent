@@ -15,16 +15,21 @@ class TentRequestHandler ( BaseHTTPRequestHandler ):
 	tent = None
 	
 	def GET_main ( self, *path ):
-		body = []
-		body.append( '<h1>Tent web interface</h1>' )
-		body.append( '<h2>Actions</h2>' )
+		body = [ '<h1>Tent web interface</h1>' ]
+		
+		body.append( '<h2>Global actions</h2>' )
 		body.append( '<ul>' )
 		body.append( '  <li><a href="/modules">Test module overview</a></li>' )
 		body.append( '  <li><a href="/suites">Test suites</a></li>' )
-		body.append( '  <li><a href="/logs">Test suite logs</a></li>' )
-		body.append( '  <li><a href="/cases/SUITENAMEHERE">Test suite, test cases</a></li>' )
 		body.append( '  <li><a href="/shutdown">Shutdown web interface</a></li>' )
 		body.append( '</ul>' )
+		
+		body.append( '<h2>Test suites</h2>' )
+		body.append( '<ul>' )
+		for suite in self.tent.suites:
+			body.append( '  <li><a href="/suite/{0}">{0}</a> (<a href="/log/{0}">logs</a>)</li>'.format( suite ) )
+		body.append( '</ul>' )
+		
 		self.sendHtmlResponse( body )
 	
 	def GET_shutdown ( self, *path ):
@@ -33,24 +38,6 @@ class TentRequestHandler ( BaseHTTPRequestHandler ):
 		
 		print( 'Shutdown requested, shutting down...' )
 		threading.Thread( name='TentShutdownThread', target=self.server.shutdown ).start()
-	
-	def GET_suites ( self, *path ):
-		body = [ '<h1>Test suites</h1>', '<ul>' ]
-		
-		for suite in self.tent.suites:
-			body.append( '  <li><a href="/suite/{0}">{0}</a> (<a href="/log/{0}">logs</a>)</li>'.format( suite ) )
-		
-		body.append( '</ul>' )
-		self.sendHtmlResponse( body )
-	
-	def GET_logs ( self, *path ):
-		body = [ '<h1>Test suite logs</h1>', '<p>Choose test suite:</p>', '<ul>' ]
-		
-		for suiteName in glob.glob( '*.yaml.log' ):
-			body.append( '  <li><a href="/log/{0}">{0}</a></li>'.format( suiteName[:-9] ) )
-		
-		body.append( '</ul>' )
-		self.sendHtmlResponse( body )
 	
 	def GET_suite ( self, suite, *path ):
 		body = [ '<h1>Test cases of suite: ' + suite + '</h1>' ]
