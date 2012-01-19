@@ -72,8 +72,10 @@ def fixedFilter ( t ):
 		ActionStructure( 'backup', 'http://schemas.ogf.org/occi/infrastructure/storage/action#' ) ) )
 	
 	rsp = t.request( 'GET', '/-/', headerData=data )
+	
 	t.assertEqual( len( rsp.structures ), len( data ) )
 	structureSet = set( rsp.structures )
+	
 	t.assertEqual( len( structureSet ), len( data ) )
 	t.assertEqual( structureSet, data )
 
@@ -81,9 +83,10 @@ def fixedFilter ( t ):
 def randomFilter ( t ):
 	'''Test the query interface filter by first requesting a full discovery and randomly selecting a subset.'''
 	rspFull = t.request( 'GET', '/-/' )
-	data = set( random.sample( rspFull.structures, 4 ) )
+	data = set( map( lambda x: x.identity(), random.sample( rspFull.structures, 4 ) ) )
 	t.log( 'Active filter:', ', '.join( map( lambda s: '{}/{}'.format( s.categoryClass, s.term ), data ) ) )
 	
 	rsp = t.request( 'GET', '/-/', headerData=data )
+	
 	t.assertEqual( len( rsp.structures ), len( data ) )
 	t.assertEqual( set( rsp.structures ), data )
