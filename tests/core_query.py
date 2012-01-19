@@ -57,11 +57,11 @@ def builtinStructures ( t, testInfrastructureTypes : 'Test for infrastructure ty
 	t.assertTrue( len( rsp.structures ) > 0 )
 	
 	for structure in coreStructures:
-		t.assertIn( structure, rsp.structures )
+		t.assertIn( structure, rsp.structures, '{0.term} not defined'.format( structure ) )
 	
 	if testInfrastructureTypes:
 		for structure in infrastructureStructures:
-			t.assertIn( structure, rsp.structures )
+			t.assertIn( structure, rsp.structures, '{0.term} not defined'.format( structure ) )
 
 @testModule
 def fixedFilter ( t ):
