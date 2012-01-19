@@ -28,7 +28,7 @@ class TentRequestHandler ( BaseHTTPRequestHandler ):
 		body.append( '<h2>Test suites</h2>' )
 		body.append( '<ul>' )
 		for suite in self.tent.suites:
-			body.append( '  <li><a href="/suite/{0}">{0}</a> (<a href="/log/{0}">logs</a>)</li>'.format( suite ) )
+			body.append( '  <li><a href="/suite/{0}">{0}</a> (<a href="/log/{0}">logs</a>, <a href="/run/{0}">run</a>)</li>'.format( suite ) )
 		body.append( '</ul>' )
 		
 		self.sendHtmlResponse( body )
@@ -52,6 +52,30 @@ class TentRequestHandler ( BaseHTTPRequestHandler ):
 			for testCase in self.tent.loadTestCases( f ):
 				body.append( '  <li>' + testCase.title + '</li>' )
 			body.append( '</ol>' )
+		self.sendHtmlResponse( body )
+	
+	def GET_run ( self, suite, *path ):
+		body = [ self.homelink, '<h1>Running suite: ' + suite + '</h1>' ]
+		
+		try:
+			suiteFile = open( 'suites/' + suite + '.yaml' )
+		except IOError:
+			body.append( '<p>Invalid suite name.</p>' )
+		else:
+			logFileName = '{}.log'.format( suiteFile.name )
+			
+			def run ( tent ):
+				from datetime import datetime
+				with open( logFileName, 'a+' ) as logFile:
+					print( '=' * 50 + ' {0} =='.format( datetime.utcnow().isoformat( ' ' ) ), file=logFile )
+					tent.runSuite( suiteFile, logFile, suppressPrint=True )
+					print( file=logFile )
+			
+			threading.Thread( name='SuiteRunner', target=run, args=( self.tent, ) ).start()
+			
+			body.append( '<h2>Logs</h2>' )
+			body.append( '<p>Live logs are not yet available. Please refer to the static logs after the suite executed.</p>' )
+			body.append( '<p><a href="/log/{0}">Show static logs.</a></p>'.format( suite ) )
 		self.sendHtmlResponse( body )
 	
 	def GET_log ( self, suite, *path ):
